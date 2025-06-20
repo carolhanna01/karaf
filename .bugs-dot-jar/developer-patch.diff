@@ -1,0 +1,277 @@
+diff --git a/assemblies/features/framework/src/main/resources/resources/etc/system.properties b/assemblies/features/framework/src/main/resources/resources/etc/system.properties
+index b1ee30e73..e105d178c 100644
+--- a/assemblies/features/framework/src/main/resources/resources/etc/system.properties
++++ b/assemblies/features/framework/src/main/resources/resources/etc/system.properties
+@@ -115,6 +115,6 @@ karaf.secured.services = (&(osgi.command.scope=*)(osgi.command.function=*))
+ # To enable OSGi security, uncomment the properties below,
+ # install the framework-security feature and restart.
+ #
+-#java.security.policy=${karaf.home}/etc/all.policy
++#java.security.policy=${karaf.etc}/all.policy
+ #org.osgi.framework.security=osgi
+-#org.osgi.framework.trust.repositories=${karaf.home}/etc/trustStore.ks
++#org.osgi.framework.trust.repositories=${karaf.etc}/trustStore.ks
+diff --git a/instance/core/pom.xml b/instance/core/pom.xml
+index 17b9894c4..3528b28bf 100644
+--- a/instance/core/pom.xml
++++ b/instance/core/pom.xml
+@@ -129,6 +129,8 @@
+                                     <includes>
+                                         <include>**/*.properties</include>
+                                         <include>**/*.cfg</include>
++                                        <include>**/*.xml</include>
++                                        <include>**/*.info</include>
+                                     </includes>
+                                 </resource>
+                                 <resource>
+diff --git a/instance/core/src/main/java/org/apache/karaf/instance/core/internal/InstanceServiceImpl.java b/instance/core/src/main/java/org/apache/karaf/instance/core/internal/InstanceServiceImpl.java
+index 55a952938..0bfd6e1b5 100644
+--- a/instance/core/src/main/java/org/apache/karaf/instance/core/internal/InstanceServiceImpl.java
++++ b/instance/core/src/main/java/org/apache/karaf/instance/core/internal/InstanceServiceImpl.java
+@@ -270,26 +270,46 @@ public class InstanceServiceImpl implements InstanceService {
+                 mkdir(karafBase, "deploy", printOutput);
+                 mkdir(karafBase, "data", printOutput);
+ 
++                copyResourceToDir(karafBase, "etc/all.policy", printOutput);
+                 copyResourceToDir(karafBase, "etc/config.properties", printOutput);
+-                copyResourceToDir(karafBase, "etc/jre.properties", printOutput);
+                 copyResourceToDir(karafBase, "etc/custom.properties", printOutput);
++                copyResourceToDir(karafBase, "etc/distribution.info", printOutput);
++                copyResourceToDir(karafBase, "etc/equinox-debug.properties", printOutput);
+                 copyResourceToDir(karafBase, "etc/java.util.logging.properties", printOutput);
++                copyResourceToDir(karafBase, "etc/jmx.acl.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/jmx.acl.java.lang.Memory.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/jmx.acl.org.apache.karaf.bundle.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/jmx.acl.org.apache.karaf.config.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/jmx.acl.org.apache.karaf.security.jmx.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/jmx.acl.osgi.compendium.cm.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/jre.properties", printOutput);
++                copyResourceToDir(karafBase, "etc/keys.properties", printOutput);
+                 copyResourceToDir(karafBase, "etc/org.apache.felix.fileinstall-deploy.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.bundle.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.config.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.feature.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.jaas.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.kar.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.shell.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.command.acl.system.cfg", printOutput);
+                 copyResourceToDir(karafBase, "etc/org.apache.karaf.features.obr.cfg", printOutput);
+                 copyResourceToDir(karafBase, "etc/org.apache.karaf.features.repos.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.jaas.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/org.apache.karaf.kar.cfg", printOutput);
+                 copyResourceToDir(karafBase, "etc/org.apache.karaf.log.cfg", printOutput);
+                 copyResourceToDir(karafBase, "etc/org.ops4j.pax.logging.cfg", printOutput);
+                 copyResourceToDir(karafBase, "etc/org.ops4j.pax.url.mvn.cfg", printOutput);
++                copyResourceToDir(karafBase, "etc/regions-config.xml", printOutput);
++                copyResourceToDir(karafBase, "etc/shell.init.script", printOutput);
+                 copyResourceToDir(karafBase, "etc/users.properties", printOutput);
+-                copyResourceToDir(karafBase, "etc/keys.properties", printOutput);
+ 
+                 copyResourceToDir(karafBase, FEATURES_CFG, printOutput);
+                 addFeaturesFromSettings(new File(karafBase, FEATURES_CFG), settings);
+ 
+                 // The startup.properties is now generated by the karaf maven plugin, so
+                 // we use the one from the root instance instead of embedding it
+-                File curbase = new File(System.getProperty("karaf.base"));
+-                copy(new File(curbase, "etc/startup.properties"), new File(karafBase, "etc/startup.properties"));
++                File rootEtc = new File(System.getProperty("karaf.etc"));
++                copy(new File(rootEtc, "startup.properties"), new File(karafBase, "etc/startup.properties"));
+ 
+                 HashMap<String, String> props = new HashMap<String, String>();
+                 props.put("${SUBST-KARAF-NAME}", name);
+diff --git a/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/org.apache.karaf.shell.cfg b/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/org.apache.karaf.shell.cfg
+index d94bbfd68..077f5da2a 100644
+--- a/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/org.apache.karaf.shell.cfg
++++ b/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/org.apache.karaf.shell.cfg
+@@ -24,33 +24,52 @@
+ #
+ # Via sshPort and sshHost you define the address you can login into Karaf.
+ #
+-sshPort=${SUBST-SSH-PORT}
+-sshHost=0.0.0.0
++sshPort = ${SUBST-SSH-PORT}
++sshHost = 0.0.0.0
++
++#
++# The sshIdleTimeout defines the inactivity timeout to logout the SSH session.
++# The sshIdleTimeout is in milliseconds, and the default is set to 30 minutes.
++#
++sshIdleTimeout = 1800000
+ 
+ #
+ # sshRealm defines which JAAS domain to use for password authentication.
+ #
+-sshRealm=karaf
++sshRealm = karaf
+ 
+ #
+ # The location of the hostKey file defines where the private/public key of the server
+ # is located. If no file is at the defined location it will be ignored.
+ #
+-hostKey=${karaf.base}/etc/host.key
++hostKey = ${karaf.etc}/host.key
+ 
+ #
+ # Role name used for SSH access authorization
+ # If not set, this defaults to the ${karaf.admin.role} configured in etc/system.properties
+ #
+-# sshRole=admin
++# sshRole = admin
+ 
+ #
+ # Self defined key size in 1024, 2048, 3072, or 4096
+ # If not set, this defaults to 1024.
+ #
+-# keySize=1024
++# keySize = 1024
+ 
+ #
+ # Specify host key algorithm, defaults to DSA
+ #
+-# algorithm=DSA
++# algorithm = DSA
++
++#
++# Defines the completion mode on the Karaf shell console. The possible values are:
++# - GLOBAL: it's the same behavior as in previous Karaf releases. The completion displays all commands and all aliases
++#           ignoring if you are in a subshell or not.
++# - FIRST: the completion displays all commands and all aliases only when you are not in a subshell. When you are
++#          in a subshell, the completion displays only the commands local to the subshell.
++# - SUBSHELL: the completion displays only the subshells on the root level. When you are in a subshell, the completion
++#             displays only the commands local to the subshell.
++# This property define the default value when you use the Karaf shell console.
++# You can change the completion mode directly in the shell console, using shell:completion command.
++#
++completionMode = GLOBAL
+\ No newline at end of file
+diff --git a/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/system.properties b/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/system.properties
+index 0f033e708..a683a3432 100644
+--- a/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/system.properties
++++ b/instance/core/src/main/resources/org/apache/karaf/instance/resources/etc/system.properties
+@@ -28,45 +28,46 @@
+ # is not fully available.
+ # To change log levels, please refer to the org.ops4j.pax.logging.cfg file
+ # instead.
+-org.ops4j.pax.logging.DefaultServiceLog.level=ERROR
++org.ops4j.pax.logging.DefaultServiceLog.level = ERROR
+ 
+ #
+ # Name of this Karaf instance.
+ #
+-karaf.name=${SUBST-KARAF-NAME}
++karaf.name = ${SUBST-KARAF-NAME}
+ 
+ #
+ # Default repository where bundles will be loaded from before using
+ # other Maven repositories.  For the full Maven configuration, see
+ # the org.ops4j.pax.url.mvn.cfg file.
+ #
+-karaf.default.repository=system
++karaf.default.repository = system
+ 
+ #
+ # Location of a shell script that will be run when starting a shell
+ # session.  This script can be used to create aliases and define
+ # additional commands.
+ #
+-karaf.shell.init.script=${karaf.home}/etc/shell.init.script
++karaf.shell.init.script = ${karaf.etc}/shell.init.script
+ 
+ #
+ # Sets the maximum size of the shell command history. If not set,
+ # defaults to 500 entries. Setting to 0 will disable history.
+ #
+-# karaf.shell.history.maxSize=0
++# karaf.shell.history.maxSize = 0
+ 
+ #
+ # Deletes the entire karaf.data directory at every start
+ #
+-karaf.clean.all=false
++karaf.clean.all = false
+ 
+ #
+ # Deletes the karaf.data/cache directory at every start
+ #
+-karaf.clean.cache=false
++karaf.clean.cache = false
+ 
+ #
+-# Default role name used for console authorization (JMX, SSH and WEB)
++# Roles to use when logging into a local Karaf console.
++#
+ # The syntax is the following:
+ #   [classname:]principal
+ # where classname is the class name of the principal object
+@@ -74,33 +75,46 @@ karaf.clean.cache=false
+ # and principal is the name of the principal of that class
+ # (defaults to instance).
+ #
+-# Note that this value can be overriden using the various ConfigAdmin
+-# configurations for JMX, SSH or the WebConsole.
+-#
+-karaf.admin.role=admin
++karaf.local.roles = admin,manager,viewer
+ 
+ #
+ # Set this empty property to avoid errors when validating xml documents.
+ #
+-xml.catalog.files=
++xml.catalog.files =
+ 
+ #
+ # Suppress the bell in the console when hitting backspace too many times
+ # for example
+ #
+-jline.nobell=true
++jline.nobell = true
+ 
+ #
+ # ServiceMix specs options
+ #
+-org.apache.servicemix.specs.debug=false
+-org.apache.servicemix.specs.timeout=100
++org.apache.servicemix.specs.debug = false
++org.apache.servicemix.specs.timeout = 100
+ 
+ #
+ # Settings for the OSGi 4.3 Weaving
+ # By default, we will not weave any classes. Change this setting to include classes
+ # that you application needs to have woven.
+ #
+-org.apache.aries.proxy.weaving.enabled=none
++org.apache.aries.proxy.weaving.enabled = none
+ # Classes not to weave - Aries default + Xerces which is known to have issues.
+-org.apache.aries.proxy.weaving.disabled=org.objectweb.asm.*,org.slf4j.*,org.apache.log4j.*,javax.*,org.apache.xerces.*
++org.apache.aries.proxy.weaving.disabled = org.objectweb.asm.*,org.slf4j.*,org.apache.log4j.*,javax.*,org.apache.xerces.*
++
++#
++# By default, only Karaf shell commands are secured, but additional services can be
++# secured by expanding this filter
++#
++karaf.secured.services = (&(osgi.command.scope=*)(osgi.command.function=*))
++
++#
++# Security properties
++#
++# To enable OSGi security, uncomment the properties below,
++# install the framework-security feature and restart.
++#
++#java.security.policy=${karaf.etc}/all.policy
++#org.osgi.framework.security=osgi
++#org.osgi.framework.trust.repositories=${karaf.etc}/trustStore.ks
+diff --git a/instance/core/src/test/java/org/apache/karaf/instance/core/internal/InstanceServiceImplTest.java b/instance/core/src/test/java/org/apache/karaf/instance/core/internal/InstanceServiceImplTest.java
+index b7853d7bf..9c7793457 100644
+--- a/instance/core/src/test/java/org/apache/karaf/instance/core/internal/InstanceServiceImplTest.java
++++ b/instance/core/src/test/java/org/apache/karaf/instance/core/internal/InstanceServiceImplTest.java
+@@ -48,8 +48,8 @@ public class InstanceServiceImplTest {
+     @BeforeClass
+     public static void setUpClass() throws Exception {
+         String buildDirectory = ClassLoader.getSystemResource("etc/startup.properties").getFile()
+-                .replace("etc/startup.properties", "");
+-        System.setProperty("karaf.base", buildDirectory);
++                .replace("startup.properties", "");
++        System.setProperty("karaf.etc", buildDirectory);
+     }
+ 
+     @Test

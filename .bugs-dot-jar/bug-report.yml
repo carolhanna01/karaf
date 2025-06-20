@@ -1,0 +1,120 @@
+rss:
+  '@version': '0.92'
+  channel:
+    build-info:
+      build-date: 22-06-2022
+      build-number: '820010'
+      version: 8.20.10
+    description: This file is an XML representation of an issue
+    item:
+      assignee:
+        '#text': "Jean-Baptiste Onofr\xE9"
+        '@username': jbonofre
+      attachments: null
+      comments:
+        comment:
+        - '#text': '<p>Fixed on master: <a href="https://git-wip-us.apache.org/repos/asf?p=karaf.git;a=commitdiff;h=201b5544aa23080c0f8f88d005f89a4b663e44e0"
+            class="external-link" target="_blank" rel="nofollow noopener">https://git-wip-us.apache.org/repos/asf?p=karaf.git;a=commitdiff;h=201b5544aa23080c0f8f88d005f89a4b663e44e0</a></p>'
+          '@author': jbonofre
+          '@created': Sat, 21 Dec 2013 12:28:30 +0000
+          '@id': '13854853'
+        - '#text': '<p>Fixed file content on master: <a href="https://git-wip-us.apache.org/repos/asf?p=karaf.git;a=commitdiff;h=ba320216ff4473e20e3e68af8f8ff94b582849c9"
+            class="external-link" target="_blank" rel="nofollow noopener">https://git-wip-us.apache.org/repos/asf?p=karaf.git;a=commitdiff;h=ba320216ff4473e20e3e68af8f8ff94b582849c9</a></p>'
+          '@author': jbonofre
+          '@created': Sat, 21 Dec 2013 15:58:56 +0000
+          '@id': '13854879'
+      component: karaf
+      created: Sat, 21 Dec 2013 10:53:34 +0000
+      customfields:
+        customfield:
+        - '@id': customfield_12310310
+          '@key': com.atlassian.jira.toolkit:attachments
+          customfieldname: Attachment count
+          customfieldvalues:
+            customfieldvalue: '0.0'
+        - '@id': customfield_12314020
+          '@key': com.atlassian.jira.plugins.jira-development-integration-plugin:devsummary
+          customfieldname: Development
+          customfieldvalues: null
+        - '@id': customfield_12313422
+          '@key': com.atlassian.jirafisheyeplugin:jobcheckbox
+          customfieldname: Enable Automatic Patch Review
+          customfieldvalues:
+            customfieldvalue: 'false'
+        - '@id': customfield_12310420
+          '@key': com.pyxis.greenhopper.jira:gh-global-rank
+          customfieldname: Global Rank
+          customfieldvalues:
+            customfieldvalue: '364880'
+        - '@id': customfield_12312521
+          '@key': com.atlassian.jira.toolkit:LastCommentDate
+          customfieldname: Last public comment date
+          customfieldvalues: 11 years, 27 weeks, 6 days ago
+        - '@id': customfield_12311820
+          '@key': com.pyxis.greenhopper.jira:gh-lexo-rank
+          customfieldname: Rank
+          customfieldvalues:
+            customfieldvalue: '0|i1qw4v:'
+        - '@id': customfield_12310920
+          '@key': com.pyxis.greenhopper.jira:gh-global-rank
+          customfieldname: Rank (Obsolete)
+          customfieldvalues:
+            customfieldvalue: '365180'
+      description: null
+      due: null
+      environment: null
+      fixVersion: 3.0.0
+      issuelinks:
+        issuelinktype:
+          '@id': '10020'
+          inwardlinks:
+            '@description': is cloned by
+            issuelink:
+              issuekey:
+                '#text': KARAF-2646
+                '@id': '12685966'
+          name: Cloners
+      key:
+        '#text': KARAF-2645
+        '@id': '12685959'
+      labels: null
+      link: https://issues.apache.org/jira/browse/KARAF-2645
+      priority:
+        '#text': Critical
+        '@iconUrl': https://issues.apache.org/jira/images/icons/priorities/critical.svg
+        '@id': '2'
+      project:
+        '#text': Karaf
+        '@id': '12311140'
+        '@key': KARAF
+      reporter:
+        '#text': "Jean-Baptiste Onofr\xE9"
+        '@username': jbonofre
+      resolution:
+        '#text': Fixed
+        '@id': '1'
+      resolved: Sat, 21 Dec 2013 15:59:02 +0000
+      status:
+        '#text': Resolved
+        '@description': A resolution has been taken, and it is awaiting verification
+          by reporter. From here issues are either reopened, or are closed.
+        '@iconUrl': https://issues.apache.org/jira/images/icons/statuses/resolved.png
+        '@id': '5'
+      statusCategory:
+        '@colorName': green
+        '@id': '3'
+        '@key': done
+      subtasks: null
+      summary: Created instances etc folder doesn't contain all mandatory files
+      title: '[KARAF-2645] Created instances etc folder doesn''t contain all mandatory
+        files'
+      type:
+        '#text': Bug
+        '@iconUrl': https://issues.apache.org/jira/secure/viewavatar?size=xsmall&avatarId=21133&avatarType=issuetype
+        '@id': '1'
+      updated: Sat, 15 Sep 2018 05:03:22 +0000
+      votes: '0'
+      watches: '1'
+    language: en-uk
+    link: https://issues.apache.org/jira
+    title: ASF JIRA
